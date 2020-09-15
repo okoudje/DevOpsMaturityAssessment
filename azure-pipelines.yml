@@ -37,9 +37,9 @@ stages:
                replaceExistingArchive: true 
                verbose: true    
            - task: PublishBuildArtifacts@1
-             displayName: 'Publish Artifact: www'
-             artifact: www
-             condition: succeeded()
+             inputs:
+                 pathToPublish: '$(Build.ArtifactStagingDirectory)' 
+                 artifactName: 'www' 
 
   - stage: 'Deploy'
     displayName: 'Deploy  web application'      
