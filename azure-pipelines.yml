@@ -48,7 +48,8 @@ stages:
       - deployment: DeployWeb
         displayName: 'Deployment of Assessment '
         pool:
-          vmImage: 'ubuntu-latest'        
+          vmImage: 'ubuntu-latest'
+        environment: 'dev'        
         strategy:
          runOnce:
            deploy:
