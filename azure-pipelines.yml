@@ -4,15 +4,12 @@
 # https://aka.ms/yaml
 
 trigger:
-- master
-
-pool:
-  vmImage: 'ubuntu-latest'
+- '*'
 
 variables:
   phpVersion: 7.2
   azureSubscription: 'webapp rg service connection'  
-  
+
  # Build Stage
  stages:
   - stage: 'Build'
