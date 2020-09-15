@@ -38,6 +38,7 @@ stages:
                verbose: true    
            - task: PublishBuildArtifacts@1
              displayName: 'Publish Artifact: www'
+             artifactName: www
              condition: succeeded()
 
   - stage: 'Deploy'
