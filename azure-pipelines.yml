@@ -9,28 +9,64 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+variables:
+  phpVersion: 7.2
+  azureSubscription: 'webapp rg service connection'
+  # To ignore SSL error uncomment the below variable
+  VSTS_ARM_REST_IGNORE_SSL_ERRORS: true
 
+ # Build Stage
+ stages:
+  - stage: 'Build'
+    displayName: 'Build the web application'    
+    jobs:
+      - job: 'build' 
+        displayName: 'Job Build web App'
+        pool:        
+          vmImage: 'ubuntu-latest'          
+        steps:
+           - script: |
+              sudo update-alternatives --set php /usr/bin/php$(phpVersion)
+              sudo update-alternatives --set phar /usr/bin/phar$(phpVersion)
+              sudo update-alternatives --set phpdbg /usr/bin/phpdbg$(phpVersion)
+              sudo update-alternatives --set php-cgi /usr/bin/php-cgi$(phpVersion)
+              sudo update-alternatives --set phar.phar /usr/bin/phar.phar$(phpVersion)
+              php -version
+            displayName: 'Use PHP version $(phpVersion)'
+           - task: ArchiveFiles@2
+             inputs:
+               rootFolderOrFile: '$(Build.SourcesDirectory)' 
+               includeRootFolder: false 
+               archiveType: 'zip'   
+               archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip' 
+               replaceExistingArchive: true 
+               verbose: true    
+           - task: PublishBuildArtifacts@1
+             displayName: 'Publish Artifact: www'
+             condition: succeeded()
 
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(Build.SourcesDirectory)' 
-    includeRootFolder: true 
-    archiveType: 'zip' # Options: zip, 7z, tar, wim
-    #tarCompression: 'gz' # Optional. Options: gz, bz2, xz, none
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip' 
-    replaceExistingArchive: true 
-    verbose: true
-    #quiet: # Optional
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: drop'
-  condition: succeeded()
-
-
-
+  - stage: 'Deploy'
+    displayName: 'Deploy  web application'      
+    dependsOn: 
+      - Build
+    jobs:
+      - deployment: DeployWeb
+        displayName: 'Deployment of Assessment '
+        pool:
+          vmImage: 'ubuntu-latest'        
+        strategy:
+         runOnce:
+           deploy:
+             steps:
+               - download: current
+                 artifact: www
+               - task: AzureWebApp@1
+                 displayName: Azure Web App Deploy
+                 inputs:
+                   azureSubscription: $(azureSubscription)
+                   appName: assessmenttest123
+                   package: $(System.DefaultWorkingDirectory)/**/*.zip
+  # Publish WebApp
   # Verifier que les sources ne contiennent aucune vulnerabilité
   # Ziper les fichiers du repertoire dans un artefact 
   # publier les artefacts
