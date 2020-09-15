@@ -1,5 +1,7 @@
 # DevOps Maturity Assessment
 
+[![Build Status](https://megaejay.visualstudio.com/DevOpsMaturityAssessment/_apis/build/status/okoudje.DevOpsMaturityAssessment?branchName=master)](https://megaejay.visualstudio.com/DevOpsMaturityAssessment/_build/latest?definitionId=11&branchName=master)
+
 ## Overview
 
 This is a simple, survey-based tool, to help teams assess where they currently are on their DevOps journey and to help them identify next steps for further improvement.
