@@ -62,7 +62,7 @@ stages:
                  inputs:
                    azureSubscription: $(azureSubscription)
                    appName: assessmenttest123
-                   package: $(System.DefaultWorkingDirectory)/$(Build.BuildId).zip
+                   package: $(Pipeline.Workspace)/www/$(Build.BuildId).zip
   # Publish WebApp
   # Verifier que les sources ne contiennent aucune vulnerabilité
   # Ziper les fichiers du repertoire dans un artefact 
